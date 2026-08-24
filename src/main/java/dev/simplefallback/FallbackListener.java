@@ -7,6 +7,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -88,6 +89,15 @@ public class FallbackListener implements Listener {
         ServerInfo current = player.getServer() == null ? null : player.getServer().getInfo();
         ServerConnectEvent.Reason reason = event.getReason();
 
+        // Another plugin (e.g. ajQueue) or a command chose this destination on
+        // purpose. Never override it - our alive flag may simply be stale, and
+        // redirecting here would steal players ajQueue just released from a queue.
+        if (reason == ServerConnectEvent.Reason.PLUGIN
+                || reason == ServerConnectEvent.Reason.COMMAND
+                || reason == ServerConnectEvent.Reason.PLUGIN_MESSAGE) {
+            return;
+        }
+
         boolean downRedirect = reason == ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT
                 || reason == ServerConnectEvent.Reason.KICK_REDIRECT
                 || reason == ServerConnectEvent.Reason.LOBBY_FALLBACK;
@@ -121,6 +131,17 @@ public class FallbackListener implements Listener {
                 msg = "No fallback server available.";
             }
             player.disconnect(TextComponent.fromLegacyText(msg));
+        }
+    }
+
+    /**
+     * A successful switch proves the server is up - clear any stale dead flag
+     * immediately rather than waiting for the next health-check tick.
+     */
+    @EventHandler
+    public void onSwitch(ServerSwitchEvent event) {
+        if (event.getPlayer().getServer() != null) {
+            plugin.watcher().markAlive(event.getPlayer().getServer().getInfo().getName());
         }
     }
 

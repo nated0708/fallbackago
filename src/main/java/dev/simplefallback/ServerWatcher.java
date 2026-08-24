@@ -125,6 +125,18 @@ public class ServerWatcher {
                 .set(plugin.config().getFailuresBeforeDead());
     }
 
+    /** Flag a server alive immediately (a real connection beats a ping poll). */
+    public void markAlive(String serverName) {
+        if (serverName == null) {
+            return;
+        }
+        String key = key(serverName);
+        alive.put(key, Boolean.TRUE);
+        failures.computeIfAbsent(key, k -> new AtomicInteger()).set(0);
+        successes.computeIfAbsent(key, k -> new AtomicInteger())
+                .set(plugin.config().getSuccessesBeforeAlive());
+    }
+
     /** Unknown or unchecked servers are assumed alive. */
     public boolean isAlive(String serverName) {
         if (serverName == null) {

@@ -1,0 +1,5 @@
+name: SimpleFallback
+main: dev.simplefallback.FallbackPlugin
+version: ${project.version}
+author: you
+description: Sends players to a configured fallback server when their backend server dies.

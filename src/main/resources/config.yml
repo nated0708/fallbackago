@@ -1,0 +1,85 @@
+# ============================================================
+#  SimpleFallback - config.yml
+#  Server names must match the names in your Waterfall config.yml
+# ============================================================
+
+settings:
+  # Health checker. Pings every backend server so we never send a player
+  # to a fallback that is also dead.
+  health-check:
+    enabled: true
+    # Seconds between pings.
+    interval: 5
+    # How many consecutive failed pings before a server counts as DEAD.
+    failures-before-dead: 2
+    # How many consecutive successful pings before a DEAD server counts as alive again.
+    successes-before-alive: 1
+
+  # When the checker sees a server go from alive -> dead, immediately pull
+  # every player still sitting on it to their fallback. This catches frozen /
+  # hung servers where the player would otherwise just time out.
+  evacuate-on-death: true
+
+  # If true, players are only moved on kick when the server they were kicked
+  # from is actually offline. Set to true if you never want normal /kick,
+  # bans or plugin kicks to be swallowed by the fallback.
+  # (The kick-reasons list below is still honoured either way.)
+  require-server-offline: false
+
+  # Require "simplefallback.server.<servername>" to be sent to that fallback.
+  # false = anyone can be sent anywhere in the list.
+  per-server-permission: false
+
+  # Delay (ms) before the fallback message/title is shown, so it appears
+  # after the player has finished connecting.
+  message-delay: 500
+
+# ------------------------------------------------------------
+# Per-server fallback routes: <server the player was on>: [targets, in order]
+# The first target that is ONLINE (and not the dead server itself) is used.
+# ------------------------------------------------------------
+fallbacks:
+  survival:
+    - lobby
+    - lobby2
+  skyblock:
+    - lobby
+    - lobby2
+  minigames:
+    - lobby2
+    - lobby
+  # A single value also works:
+  # creative: lobby
+
+# Used when the player's server has no entry above, or none of its
+# targets are online. Tried in order.
+global-fallback:
+  - lobby
+  - lobby2
+
+# ------------------------------------------------------------
+# Kick reasons that mean "the server died". If a kick message contains any
+# of these (case-insensitive), the server is instantly flagged dead so the
+# player is never bounced back into it.
+# ------------------------------------------------------------
+server-down-reasons:
+  - "server closed"
+  - "server is restarting"
+  - "lost connection"
+  - "timed out"
+  - "timeout"
+  - "connection reset"
+  - "internal exception"
+  - "io.netty"
+  - "connection refused"
+
+# ------------------------------------------------------------
+# Kick reasons that must NEVER be cancelled - the player gets kicked to the
+# login screen as normal (bans, whitelist, anticheat, etc).
+# ------------------------------------------------------------
+ignored-kick-reasons:
+  - "banned"
+  - "ban"
+  - "whitelist"
+  - "you are not whitelisted"
+  - "kicked by an operator"

@@ -1,0 +1,31 @@
+# ============================================================
+#  SimpleFallback - lang.yml
+#  Colour codes with & . Placeholders: %prefix% %player% %from% %to% %reason%
+#  Set any message to "" to disable it.
+# ============================================================
+
+prefix: "&8[&bFallback&8] &r"
+
+# Shown in chat after the player has been moved because their server died.
+fallback-success: "%prefix%&7The server &f%from% &7went down. You were moved to &a%to%&7."
+
+# Shown when no fallback server could be found - this text is used as the
+# disconnect (kick) screen message.
+no-fallback-available: "&cThe server &f%from% &cwent down and no fallback server is available.\n&7Please reconnect in a moment."
+
+# Title shown on fallback.
+title:
+  enabled: true
+  title: "&c&lSERVER OFFLINE"
+  subtitle: "&7Moved to &f%to%"
+  fade-in: 10   # ticks
+  stay: 60      # ticks
+  fade-out: 10  # ticks
+
+# --- command messages ---
+no-permission: "%prefix%&cYou don't have permission."
+reloaded: "%prefix%&aConfiguration and language files reloaded."
+status-header: "%prefix%&7Backend server status:"
+status-line-online: " &a● &f%server%"
+status-line-offline: " &c● &f%server% &7(offline)"
+usage: "%prefix%&7Usage: &f/sfallback <reload|status>"
